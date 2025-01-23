@@ -10,13 +10,13 @@ export default function Index() {
       pages={[
         {
           backgroundColor: '#fff',
-          image: <Image source={require('../assets/images/react-logo.png')} />,
+          image: <Image source={require('../assets/images/loginImg.png')} />,
           title: 'Onboarding',
           subtitle: 'test subtitle'
         },
         {
           backgroundColor: '#fff',
-          image: <Image source={require('../assets/images/react-logo.png')} />,
+          image: <Image source={require('../assets/images/loginImg.png')} />,
           title: 'Onboarding 2',
           subtitle: 'test subtitle 2'
         }

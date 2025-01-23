@@ -3,17 +3,17 @@ import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Entypo } from '@expo/vector-icons'
 import {useFonts} from 'expo-font'
-import AuthTextBox from '@/components/AuthTextBox'
+import AuthTextBox from '../../components/AuthTextBox'
 import {faEnvelope} from '@fortawesome/free-regular-svg-icons';
 import {faLock} from '@fortawesome/free-solid-svg-icons';
-import CustomButton from '@/components/CustomButton'
+import CustomButton from '../../components/CustomButton'
 import { KeyboardAwareScrollView } from '@codler/react-native-keyboard-aware-scroll-view'
 
 
 const SignIn = () => {
     const [fontsLoaded] = useFonts({
-        'Nunito-VariableFont_wght': require('@/assets/fonts/Nunito-VariableFont_wght.ttf'),
-        'SpaceMono-Regular': require('@/assets/fonts/SpaceMono-Regular.ttf')
+        'Nunito-VariableFont_wght': require('../../assets/fonts/Nunito-VariableFont_wght.ttf')
+        // 'SpaceMono-Regular': require('@/assets/fonts/SpaceMono-Regular.ttf')
     });
     
     const [emailInput, setEmailInput] = useState<string>('');
@@ -32,7 +32,7 @@ const SignIn = () => {
     return (
         <SafeAreaView style={styles.loginPage}>
             <KeyboardAwareScrollView>
-                <Image source={require('@/assets/images/loginImg.png')}/>
+                <Image source={require('../../assets/images/loginImg.png')}/>
                 <Text style={styles.loginTitle}>Login</Text>
                 <View style={styles.inputsContainer}>
                     <AuthTextBox placeHolder="Email" iconName={faEnvelope} style={styles.emailInput} type='emailAddress' onChangeData={(value:string) => setEmailInput(value)} />
