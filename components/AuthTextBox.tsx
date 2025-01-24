@@ -1,6 +1,6 @@
 import { GestureResponderEvent, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
-import { AuthTextBoxType } from '@/types'
+import React, { useEffect, useState } from 'react'
+import { AuthTextBoxType } from '../types'
 import { Entypo } from '@expo/vector-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
@@ -10,7 +10,8 @@ const AuthTextBox:React.FC<AuthTextBoxType> = ({
     iconName,
     style,
     type,
-    onChangeData
+    onChangeData,
+    value
 }) => {
     const [isFocused, setIsFocused] = useState<boolean>(false);
     const [text, setText] = useState<string>('');
@@ -20,15 +21,10 @@ const AuthTextBox:React.FC<AuthTextBoxType> = ({
         setIsPasswordNotVisible(!isPasswordNotVisible);
     }
 
-    function handleChangeText(value: string): void {
-        setText(value);
-        onChangeData(value);
-    }
-
     return (
         <View style={[styles.container, style]}>
             <FontAwesomeIcon icon={iconName} color={ isFocused? 'lightgrey' : 'grey'} />
-            <TextInput placeholder={placeHolder} placeholderTextColor={isFocused ? 'lightgrey' : 'grey'} onFocus={() => setIsFocused(true)} onBlur={() => setIsFocused(false)} style={[styles.input, isFocused ? styles.focusedInput : styles.unfocusedInput]} onChangeText={handleChangeText} value={text} textContentType={type} secureTextEntry={isPasswordNotVisible} />
+            <TextInput placeholder={placeHolder} placeholderTextColor={isFocused ? 'lightgrey' : 'grey'} onFocus={() => setIsFocused(true)} onBlur={() => setIsFocused(false)} style={[styles.input, isFocused ? styles.focusedInput : styles.unfocusedInput]} onChangeText={onChangeData} value={value} textContentType={type} secureTextEntry={isPasswordNotVisible} />
             {type == 'password' &&
                 <TouchableOpacity onPress={togglePasswordVisibilty}>
                     <FontAwesomeIcon icon={isPasswordNotVisible ? faEyeSlash : faEye} color='white' size={24}/>
