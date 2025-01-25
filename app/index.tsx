@@ -5,8 +5,8 @@ import Onboarding from 'react-native-onboarding-swiper';
 export default function Index() {
   return (
     <Onboarding
-      onDone={() => { router.push("/(auth)/sign-up") }}
-      onSkip={() => { router.push("/(auth)/sign-up") }}
+      onDone={() => { router.push("/(auth)/sign-in") }}
+      onSkip={() => { router.push("/(auth)/sign-in") }}
       pages={[
         {
           backgroundColor: '#fff',

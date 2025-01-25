@@ -11,6 +11,8 @@ import { KeyboardAwareScrollView } from '@codler/react-native-keyboard-aware-scr
 import { router } from 'expo-router'
 import { Controller, useForm } from 'react-hook-form'
 import { SigninType, SignupType } from '../../types'
+import axios, { AxiosResponse } from 'axios'
+import Toast from 'react-native-toast-message'
 
 
 const SignIn = () => {
@@ -28,7 +30,65 @@ const SignIn = () => {
     });
 
     const onSubmit = ((data) => {
-        console.log(data);
+        axios.post("http://192.168.1.185:5000/api/auth/login", data)
+        .then((res: AxiosResponse) => {
+            Toast.show({
+                type: 'success',
+                text1: 'Signed in succcessfully',
+                text2: 'Your user has been signed in!',
+                visibilityTime: 500,
+                onHide: () => {
+                    router.navigate('/(tabs)/home')
+                }
+            })
+        })
+        .catch((error) => {
+            if (axios.isAxiosError(error)) {
+            const statusCode = error.response?.status; // Get status code
+            const errorMessage = error.response?.data.message || "An error occurred";
+
+            switch (statusCode) {
+                case 400:
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Failed to signin',
+                        text2: errorMessage
+                    });
+                break;
+                case 401:
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Failed to signin',
+                        text2: errorMessage
+                    });
+                break;
+                case 404:
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Failed to signin',
+                        text2: errorMessage
+                    });
+                break;
+                case 500:
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Failed to signin',
+                        text2: 'Server Error: Please try again later.'
+                    });
+                break;
+                default:
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Failed to signin',
+                        text2: errorMessage
+                    });
+                break;
+            }
+            } else {
+            // Handle other errors
+                console.error("An unexpected error occurred.");
+            }
+        });
     });
 
     const onChange = ((arg) => {
@@ -53,12 +113,13 @@ const SignIn = () => {
                 <View style={styles.forgotPassBtn}>
                     <Button title='Forgot Password?' color="#96d36f"/>
                 </View>
-                <CustomButton style={styles.loginButton} text='Login' isDisable={!isValid} />
+                <CustomButton style={styles.loginButton} text='Login' isDisable={!isValid} onPress={handleSubmit(onSubmit)}/>
                 <View style={styles.toSignupContainer}>
                     <Text style={styles.toSignup}>New to BotaLearn? </Text>
                     <Button title='Signup' onPress={() => router.navigate('/(auth)/sign-up')}/>
                 </View>
             </KeyboardAwareScrollView>
+            <Toast/>
         </SafeAreaView>
     )
 }
