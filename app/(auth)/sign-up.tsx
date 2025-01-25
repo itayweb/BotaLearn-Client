@@ -10,6 +10,8 @@ import { Controller, useForm } from 'react-hook-form';
 import { SignupType } from '../../types';
 import { router } from 'expo-router';
 import CustomBackButton from '../../components/CustomBackButton';
+import axios, { AxiosResponse } from 'axios';
+import Toast from 'react-native-toast-message';
 
 const SignUp = () => {
     const [fontsLoaded] = useFonts({
@@ -26,7 +28,65 @@ const SignUp = () => {
     });
 
     const onSubmit = ((data) => {
-        console.log(data);
+        axios.post("http://192.168.1.185:5000/api/auth/register", data)
+        .then((res: AxiosResponse) => {
+            Toast.show({
+                type: 'success',
+                text1: 'Signed up succcessfully',
+                text2: 'Your user has been signed up!',
+                visibilityTime: 500,
+                onHide: () => {
+                    router.navigate('/(auth)/sign-in')
+                }
+            })
+        })
+        .catch((error) => {
+            if (axios.isAxiosError(error)) {
+            const statusCode = error.response?.status; // Get status code
+            const errorMessage = error.response?.data.message || "An error occurred";
+
+            switch (statusCode) {
+                case 400:
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Failed to signup',
+                        text2: errorMessage
+                    });
+                break;
+                case 401:
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Failed to signup',
+                        text2: errorMessage
+                    });
+                break;
+                case 404:
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Failed to signup',
+                        text2: errorMessage
+                    });
+                break;
+                case 500:
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Failed to signup',
+                        text2: 'Server Error: Please try again later.'
+                    });
+                break;
+                default:
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Failed to signup',
+                        text2: errorMessage
+                    });
+                break;
+            }
+            } else {
+            // Handle other errors
+                console.error("An unexpected error occurred.");
+            }
+        });
     });
 
     const onChange = ((arg) => {
@@ -61,6 +121,7 @@ const SignUp = () => {
                     <Button title='Login' onPress={() => router.navigate('/(auth)/sign-in')}/>
                 </View>
             </KeyboardAwareScrollView>
+            <Toast />
         </SafeAreaView>
     )
 }
