@@ -1,6 +1,7 @@
 import { Link, router } from "expo-router";
 import { Image, Text, View } from "react-native";
 import Onboarding from 'react-native-onboarding-swiper';
+import { UserProvider } from "./contexts/userContext";
 
 export default function Index() {
   return (

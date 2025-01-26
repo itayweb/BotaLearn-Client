@@ -1,6 +1,6 @@
 import { View, Text, Button, Pressable, TouchableOpacity, StyleSheet } from 'react-native'
 import React from 'react'
-import { CustomButtonType } from '../types'
+import { CustomButtonType } from '../app/types'
 
 const CustomButton: React.FC<CustomButtonType> = ({style, text, isDisable, onPress}) => {
     return (
