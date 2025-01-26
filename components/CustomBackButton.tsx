@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 import React from 'react'
-import { BackButtonType } from '../types'
+import { BackButtonType } from '../app/types'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faArrowLeft, faCaretLeft } from '@fortawesome/free-solid-svg-icons'
 

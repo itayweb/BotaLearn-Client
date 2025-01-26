@@ -34,3 +34,14 @@ export type SigninType = {
     email: string,
     password: string
 }
+
+export interface User {
+    fullName: string,
+    email: string,
+    username: string,
+}
+
+export type UserContextType = {
+    user: User,
+    setUser: (user: User) => void
+}

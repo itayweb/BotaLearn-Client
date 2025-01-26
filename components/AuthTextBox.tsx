@@ -1,6 +1,6 @@
 import { GestureResponderEvent, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { AuthTextBoxType } from '../types'
+import { AuthTextBoxType } from '../app/types'
 import { Entypo } from '@expo/vector-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';

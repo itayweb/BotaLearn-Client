@@ -7,11 +7,12 @@ import { useFonts } from 'expo-font';
 import { faAddressCard, faCircleUser, faEnvelope } from '@fortawesome/free-regular-svg-icons';
 import { faLock } from '@fortawesome/free-solid-svg-icons';
 import { Controller, useForm } from 'react-hook-form';
-import { SignupType } from '../../types';
+import { SignupType } from '../types';
 import { router } from 'expo-router';
 import CustomBackButton from '../../components/CustomBackButton';
 import axios, { AxiosResponse } from 'axios';
 import Toast from 'react-native-toast-message';
+import { config } from '../api/config';
 
 const SignUp = () => {
     const [fontsLoaded] = useFonts({
@@ -28,7 +29,7 @@ const SignUp = () => {
     });
 
     const onSubmit = ((data) => {
-        axios.post("http://192.168.1.185:5000/api/auth/register", data)
+        axios.post(`http://172.20.10.4:5000/api/auth/register`, data)
         .then((res: AxiosResponse) => {
             Toast.show({
                 type: 'success',

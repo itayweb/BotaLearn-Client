@@ -10,9 +10,13 @@ import CustomButton from '../../components/CustomButton'
 import { KeyboardAwareScrollView } from '@codler/react-native-keyboard-aware-scroll-view'
 import { router } from 'expo-router'
 import { Controller, useForm } from 'react-hook-form'
-import { SigninType, SignupType } from '../../types'
+import { SigninType, SignupType } from '../types'
 import axios, { AxiosResponse } from 'axios'
 import Toast from 'react-native-toast-message'
+// import { config } from '../api/config';
+// import SecureStore from 'expo-secure-store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useUserContext } from '../contexts/userContext'
 
 
 const SignIn = () => {
@@ -20,6 +24,8 @@ const SignIn = () => {
         'Nunito-VariableFont_wght': require('../../assets/fonts/Nunito-VariableFont_wght.ttf')
         // 'SpaceMono-Regular': require('@/assets/fonts/SpaceMono-Regular.ttf')
     });
+
+    const { setUser } = useUserContext();
 
     const { handleSubmit, control, reset, formState: { errors, isDirty, isValid } } = useForm<SigninType>({
         defaultValues: {
@@ -30,63 +36,77 @@ const SignIn = () => {
     });
 
     const onSubmit = ((data) => {
-        axios.post("http://192.168.1.185:5000/api/auth/login", data)
-        .then((res: AxiosResponse) => {
-            Toast.show({
-                type: 'success',
-                text1: 'Signed in succcessfully',
-                text2: 'Your user has been signed in!',
-                visibilityTime: 500,
-                onHide: () => {
-                    router.navigate('/(tabs)/home')
-                }
-            })
+        axios.post(`http://172.20.10.4:5000/api/auth/login`, data)
+            .then(async (res: AxiosResponse) => {
+                await AsyncStorage.setItem('Authorization', res.data.token);
+                Toast.show({
+                    type: 'success',
+                    text1: 'Signed in succcessfully',
+                    text2: 'Your user has been signed in!',
+                    visibilityTime: 500,
+                    onHide: async () => {
+                        axios.get(`http://172.20.10.4:5000/api/auth/protected`, {
+                            headers: {
+                                Authorization: await AsyncStorage.getItem('Authorization')
+                            }
+                        })
+                            .then((res: AxiosResponse) => {
+                                setUser(res.data);
+                                router.navigate('/(tabs)/home')
+                            });
+                    }
+                });
         })
         .catch((error) => {
             if (axios.isAxiosError(error)) {
-            const statusCode = error.response?.status; // Get status code
-            const errorMessage = error.response?.data.message || "An error occurred";
+                const statusCode = error.response?.status; // Get status code
+                const errorMessage = error.response?.data.message || "An error occurred";
 
-            switch (statusCode) {
-                case 400:
-                    Toast.show({
-                        type: 'error',
-                        text1: 'Failed to signin',
-                        text2: errorMessage
-                    });
-                break;
-                case 401:
-                    Toast.show({
-                        type: 'error',
-                        text1: 'Failed to signin',
-                        text2: errorMessage
-                    });
-                break;
-                case 404:
-                    Toast.show({
-                        type: 'error',
-                        text1: 'Failed to signin',
-                        text2: errorMessage
-                    });
-                break;
-                case 500:
-                    Toast.show({
-                        type: 'error',
-                        text1: 'Failed to signin',
-                        text2: 'Server Error: Please try again later.'
-                    });
-                break;
-                default:
-                    Toast.show({
-                        type: 'error',
-                        text1: 'Failed to signin',
-                        text2: errorMessage
-                    });
-                break;
-            }
+                switch (statusCode) {
+                    case 400:
+                        Toast.show({
+                            type: 'error',
+                            text1: 'Failed to signin',
+                            text2: errorMessage
+                        });
+                    break;
+                    case 401:
+                        Toast.show({
+                            type: 'error',
+                            text1: 'Failed to signin',
+                            text2: errorMessage
+                        });
+                    break;
+                    case 404:
+                        Toast.show({
+                            type: 'error',
+                            text1: 'Failed to signin',
+                            text2: errorMessage
+                        });
+                    break;
+                    case 500:
+                        Toast.show({
+                            type: 'error',
+                            text1: 'Failed to signin',
+                            text2: 'Server Error: Please try again later.'
+                        });
+                    break;
+                    default:
+                        Toast.show({
+                            type: 'error',
+                            text1: 'Failed to signin',
+                            text2: errorMessage
+                        });
+                    break;
+                }
             } else {
             // Handle other errors
-                console.error("An unexpected error occurred.");
+                Toast.show({
+                    type: 'error',
+                    text1: 'Failed to signin',
+                    text2: error.toString()
+                });
+                console.error(error);
             }
         });
     });
