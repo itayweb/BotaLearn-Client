@@ -13,7 +13,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { SigninType, SignupType } from '../types'
 import axios, { AxiosResponse } from 'axios'
 import Toast from 'react-native-toast-message'
-// import { config } from '../api/config';
+import { config } from '../api/config';
 // import SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useUserContext } from '../contexts/userContext'
@@ -36,7 +36,7 @@ const SignIn = () => {
     });
 
     const onSubmit = ((data) => {
-        axios.post(`http://172.20.10.4:5000/api/auth/login`, data)
+        axios.post(`${config.backendURL}/api/auth/login`, data)
             .then(async (res: AxiosResponse) => {
                 await AsyncStorage.setItem('Authorization', res.data.token);
                 Toast.show({
@@ -45,12 +45,13 @@ const SignIn = () => {
                     text2: 'Your user has been signed in!',
                     visibilityTime: 500,
                     onHide: async () => {
-                        axios.get(`http://172.20.10.4:5000/api/auth/protected`, {
+                        axios.get(`${config.backendURL}/api/auth/protected`, {
                             headers: {
                                 Authorization: await AsyncStorage.getItem('Authorization')
                             }
                         })
                             .then((res: AxiosResponse) => {
+                                console.log(res.data);
                                 setUser(res.data);
                                 router.navigate('/(tabs)/home')
                             });
