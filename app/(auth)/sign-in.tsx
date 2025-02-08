@@ -10,7 +10,7 @@ import CustomButton from '../../components/CustomButton'
 import { KeyboardAwareScrollView } from '@codler/react-native-keyboard-aware-scroll-view'
 import { router } from 'expo-router'
 import { Controller, useForm } from 'react-hook-form'
-import { SigninType, SignupType } from '../types'
+import { SigninType, SignupType, IUser } from '../types'
 import axios, { AxiosResponse } from 'axios'
 import Toast from 'react-native-toast-message'
 import { config } from '../api/config';
@@ -25,7 +25,7 @@ const SignIn = () => {
         // 'SpaceMono-Regular': require('@/assets/fonts/SpaceMono-Regular.ttf')
     });
 
-    const { setUser } = useUserContext();
+    const { setUser, user } = useUserContext();
 
     const { handleSubmit, control, reset, formState: { errors, isDirty, isValid } } = useForm<SigninType>({
         defaultValues: {
@@ -119,6 +119,7 @@ const SignIn = () => {
     });
 
     return (
+        
         <SafeAreaView style={styles.loginPage}>
             <KeyboardAwareScrollView>
                 <Image source={require('../../assets/images/loginImg.png')}/>

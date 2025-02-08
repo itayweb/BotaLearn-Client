@@ -1,11 +1,11 @@
 import { View, Text } from 'react-native'
 import React, { createContext, ReactNode, useContext, useState } from 'react'
-import { User, UserContextType } from '../types';
+import { IUser, UserContextType } from '../types';
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-    const [user, setUser] = useState<User>({ fullName: '', email: '', username: '' });
+    const [user, setUser] = useState<IUser>({ fullname: '', email: '', username: '' , plants: []});
 
     // const applyUser = (fullName: string, email: string, username: string) => {
     //     setUser({ fullName: fullName, email: email, username: username });
