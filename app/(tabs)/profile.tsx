@@ -6,14 +6,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Profile = () => {
     const { user, setUser } = useUserContext();
-    console.log(user.fullName)
+    console.log(user.fullname)
 
     return (
         <View style={styles.testContainer}>
-            <Text style={styles.testText}>User: {user.fullName}</Text>
+            <Text style={styles.testText}>User: {user.fullname}</Text>
             <Button title='Logout' onPress={async () => {
                 await AsyncStorage.removeItem('Authorization');
-                setUser({ fullName: '', email: '', username: '' });
+                setUser({ fullname: '', email: '', username: '', plants: [] });
                 router.navigate('/(auth)/sign-in');
             }}/>
         </View>

@@ -29,7 +29,7 @@ const SignUp = () => {
     });
 
     const onSubmit = ((data) => {
-        axios.post(`http://172.20.10.4:5000/api/auth/register`, data)
+        axios.post(`${config.backendURL}/api/auth/register`, data)
         .then((res: AxiosResponse) => {
             Toast.show({
                 type: 'success',

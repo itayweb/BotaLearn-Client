@@ -7,7 +7,15 @@ import { Platform } from 'react-native';
 
 const TabsLayout = () => {
     return (
-        <Tabs>
+        <Tabs screenOptions={{
+            tabBarStyle: {
+                backgroundColor: '#333333',
+                borderTopLeftRadius: 15,
+                borderTopRightRadius: 15
+            },
+            tabBarInactiveTintColor: 'lightgrey',
+            tabBarActiveTintColor: '#96D35F', 
+        }}>
             <Tabs.Screen
                 name='home'
                 options={{
@@ -15,9 +23,9 @@ const TabsLayout = () => {
                     headerShown: false,
                     tabBarIcon: ({ focused, color }) => {
                         if (focused) {
-                            return <Ionicons name='home' color={color} size={28} />
+                            return <Ionicons name='home' color={color} size={24} />
                         }
-                        return <Ionicons name='home-outline' color={color} size={28} />
+                        return <Ionicons name='home-outline' color={color} size={24} />
                     }
                 }}
             />
@@ -28,9 +36,9 @@ const TabsLayout = () => {
                     headerShown: false,
                     tabBarIcon: ({ focused, color }) => {
                         if (focused) {
-                            return <MaterialCommunityIcons name='flower-tulip' color={color} size={28}/>
+                            return <MaterialCommunityIcons name='flower-tulip' color={color} size={24}/>
                         }
-                        return <MaterialCommunityIcons name='flower-tulip-outline' color={color} size={28}/>
+                        return <MaterialCommunityIcons name='flower-tulip-outline' color={color} size={24}/>
                     }
                 }}
             />
@@ -41,9 +49,9 @@ const TabsLayout = () => {
                     headerShown: false,
                     tabBarIcon: ({ focused, color }) => {
                         if (focused) {
-                            return <Ionicons name='book' color={color} size={28}/>
+                            return <Ionicons name='book' color={color} size={24}/>
                         }
-                        return <Ionicons name='book-outline' color={color} size={28}/>
+                        return <Ionicons name='book-outline' color={color} size={24}/>
                     }
                 }}
             />
@@ -54,9 +62,9 @@ const TabsLayout = () => {
                     headerShown: false,
                     tabBarIcon: ({ focused, color }) => {
                         if (focused) {
-                            return <FontAwesome5 name='user-alt' color={color} size={28}/>
+                            return <FontAwesome5 name='user-alt' color={color} size={24}/>
                         }
-                        return <FontAwesome5 name='user' color={color} size={28}/>
+                        return <FontAwesome5 name='user' color={color} size={24}/>
                     }
                 }}
             />
