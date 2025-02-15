@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, Image, Button, StyleSheet } from 'react-native'
+import { View, Text, Image, Button, StyleSheet } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { KeyboardAwareScrollView } from '@codler/react-native-keyboard-aware-scroll-view';
 import AuthTextBox from '../../components/AuthTextBox';
@@ -13,6 +13,7 @@ import CustomBackButton from '../../components/CustomBackButton';
 import axios, { AxiosResponse } from 'axios';
 import Toast from 'react-native-toast-message';
 import { config } from '../api/config';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const SignUp = () => {
     const [fontsLoaded] = useFonts({
@@ -97,7 +98,7 @@ const SignUp = () => {
     });
 
     return (
-        <SafeAreaView style={styles.signupPage}>
+        <SafeAreaView style={styles.signupPage} edges={['top']}>
             <KeyboardAwareScrollView>
                 <CustomBackButton onPress={() => router.navigate('/(auth)/sign-in')}/>
                 <Image source={require('../../assets/images/signupImg.png')} style={styles.signupImage} />

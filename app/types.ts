@@ -1,5 +1,6 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core"
-import { ReactElement } from "react"
+import { BottomSheetModal } from "@gorhom/bottom-sheet"
+import { ReactElement, Ref } from "react"
 import { GestureResponderEvent, ImageStyle, StyleProp, TextInputIOSProps, TextStyle, ViewStyle } from "react-native"
 
 export type AuthTextBoxType = {
@@ -52,7 +53,7 @@ export interface IPlantAction {
 }
 
 export interface IPlant {
-    id: string,
+    plantid: string,
     name: string,
     type: string,
     humidity: number,
@@ -77,4 +78,37 @@ export type UserContextType = {
 
 export type PlantType = {
     plant: IPlant
+}
+
+export interface IAvailablePlant {
+    id: string,
+    default_humidity: number,
+    default_light_exposure: number,
+    name: string,
+    type: string,
+    default_season: string,
+    default_placement: string
+}
+
+export type AvailablePlantType = {
+    plant: IAvailablePlant,
+    onPress: (event:React.BaseSyntheticEvent) => void,
+}
+
+export type BottomSheetType = {
+    bottomSheetRef: React.MutableRefObject<BottomSheetModal>
+    placeholder?: string,
+    style?: StyleProp<ViewStyle>,
+    defaultValue?: string,
+    onChangeData?: (value: string) => void,
+    value?: string
+}
+
+export type UserPlantType = {
+    plantid: string,
+    humidity: number,
+    light_exposure: number,
+    season: string,
+    placement: string,
+    username: string
 }
