@@ -2,36 +2,29 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faClock } from '@fortawesome/free-regular-svg-icons'
-import { faAngleRight } from '@fortawesome/free-solid-svg-icons'
+import { faAngleRight, faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import { BlurView } from 'expo-blur';
-import { PlantType } from '../app/types'
+import { AvailablePlantType } from '../app/types'
 
-const Plant:React.FC<PlantType> = ({
-    plant
+const Plant:React.FC<AvailablePlantType> = ({
+    plant,
+    onPress
 }) => {
     return (
         <View style={styles.plantWrapper}>
-            {plant.reminders.length > 0 &&     
-                <View style={styles.reminderWrapper}>
-                    <FontAwesomeIcon icon={faClock} color='white'/>
-                    <Text style={styles.reminderTitle}>2h 45m 32s</Text>
+            <TouchableOpacity onPress={onPress}>
+                {/* <TouchableOpacity> */}
+                <FontAwesomeIcon icon={faPlusCircle} color='white' size={24} style={styles.addIcon}/>
+                {/* </TouchableOpacity> */}
+                <Image style={styles.plantImage} source={require('../assets/images/plants/basilPlant.png')} resizeMode='contain' />
+                {/* <BlurView intensity={30} style={styles.plantFooter}> */}
+                <View style={styles.plantFooter}>
+                    <View style={styles.plantInfo}>
+                        <Text style={styles.plantInfoTitle}>{plant.name}</Text>
+                        <Text style={styles.plantInfoStageTitle}>Beginner</Text>
+                    </View>
                 </View>
-            }
-            <Image style={styles.plantImage} source={require('../assets/images/plants/basilPlant.png')} resizeMode='contain' />
-            {/* <BlurView intensity={30} style={styles.plantFooter}> */}
-            <View style={styles.plantFooter}>
-                <View style={styles.plantInfo}>
-                    <Text style={styles.plantInfoTitle}>{plant.name}</Text>
-                    <Text style={styles.plantInfoStageTitle}>Watering</Text>
-                </View>
-                {/* <View style={styles.plantManage}> */}
-                <TouchableOpacity style={styles.plantManage} activeOpacity={0.7} onPress={() => {
-                    }}>
-                        <Text style={styles.plantManageTitle}>Manage</Text>
-                        <FontAwesomeIcon icon={faAngleRight} color='white' style={styles.plantManageIcon} size={18}/>
-                    </TouchableOpacity>
-                {/* </View> */}
-            </View>
+            </TouchableOpacity>
             {/* </BlurView> */}
         </View>
     )
@@ -44,8 +37,8 @@ const styles = StyleSheet.create({
         // alignItems: 'center',
         backgroundColor: '#333333',
         borderRadius: 15,
-        width: '90%',
-        marginBottom: 20
+        width: '80%',
+        marginBottom: 10
         // marginInline: 'auto',
         // height: 350,
         // overflow: 'hidden'
@@ -116,6 +109,10 @@ const styles = StyleSheet.create({
         color: 'white',
         marginBottom: 5,
         fontWeight: '300',
+    },
+    addIcon: {
+        marginLeft: -10,
+        marginTop: -10
     }
 })
 

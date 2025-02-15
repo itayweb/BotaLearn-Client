@@ -6,7 +6,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Profile = () => {
     const { user, setUser } = useUserContext();
-    console.log(user.fullname)
 
     return (
         <View style={styles.testContainer}>

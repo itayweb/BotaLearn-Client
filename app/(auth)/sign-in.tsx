@@ -51,7 +51,6 @@ const SignIn = () => {
                             }
                         })
                             .then((res: AxiosResponse) => {
-                                console.log(res.data);
                                 setUser(res.data);
                                 router.navigate('/(tabs)/home')
                             });
@@ -120,7 +119,7 @@ const SignIn = () => {
 
     return (
         
-        <SafeAreaView style={styles.loginPage}>
+        <SafeAreaView style={styles.loginPage} edges={['top']}>
             <KeyboardAwareScrollView>
                 <Image source={require('../../assets/images/loginImg.png')}/>
                 <Text style={styles.loginTitle}>Login</Text>

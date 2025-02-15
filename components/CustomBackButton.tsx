@@ -7,9 +7,9 @@ import { faArrowLeft, faCaretLeft } from '@fortawesome/free-solid-svg-icons'
 const CustomBackButton:React.FC<BackButtonType> = ({onPress, style}) => {
     return (
         <View>
-            <TouchableOpacity style={[style && styles.disabledButton]} onPress={onPress}>
+            <TouchableOpacity style={[style]} onPress={onPress}>
                 {/* <Text style={styles.buttonText}></Text> */}
-                <FontAwesomeIcon icon={faArrowLeft} color='white' size={24}/>
+                <FontAwesomeIcon icon={faArrowLeft} color='white' size={24} style={styles.btnIcon}/>
             </TouchableOpacity>
         </View>
     )
@@ -21,8 +21,8 @@ const styles = StyleSheet.create({
         fontWeight: '700'
         // fontSize: 15
     },
-    disabledButton: {
-        backgroundColor: '#333333'
+    btnIcon: {
+        // height: '50%'
     }
 })
 

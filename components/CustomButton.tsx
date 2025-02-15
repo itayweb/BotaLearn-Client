@@ -16,7 +16,8 @@ const CustomButton: React.FC<CustomButtonType> = ({style, text, isDisable, onPre
 const styles = StyleSheet.create({
     buttonText: {
         fontFamily: 'Nunito',
-        fontWeight: '700'
+        fontWeight: '700',
+        textAlign: 'center'
         // fontSize: 15
     },
     disabledButton: {

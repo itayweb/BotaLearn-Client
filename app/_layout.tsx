@@ -16,6 +16,7 @@ export default function RootLayout() {
           <Stack.Screen name="(auth)" options={{ headerShown: false, gestureEnabled: false }} />
           <Stack.Screen name="index" options={{ headerShown: false, gestureEnabled: false }} />
           <Stack.Screen name="search/[query]" options={{ headerShown: false, gestureEnabled: false }} />
+          <Stack.Screen name="(plants)" options={{ headerShown: false }} />
         </Stack>
         <StatusBar style="auto"/>
       </UserProvider>
