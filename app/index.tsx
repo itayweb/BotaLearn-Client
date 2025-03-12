@@ -1,9 +1,15 @@
-import { Link, router } from "expo-router";
+import { Link, Redirect, router } from "expo-router";
 import { Image, Text, View } from "react-native";
 import Onboarding from 'react-native-onboarding-swiper';
-import { UserProvider } from "./contexts/userContext";
+import { UserProvider, useUserContext } from "./contexts/userContext";
 
 export default function Index() {
+  const { isAuthenticated, user } = useUserContext();
+  
+  if (user) {
+    return <Redirect href={"/(tabs)/home"}/>
+  }
+
   return (
     <Onboarding
       onDone={() => { router.push("/(auth)/sign-in") }}

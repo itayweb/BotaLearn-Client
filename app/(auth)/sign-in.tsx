@@ -17,6 +17,7 @@ import { config } from '../api/config';
 // import SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useUserContext } from '../contexts/userContext'
+import api from '../api/api'
 
 
 const SignIn = () => {
@@ -25,7 +26,7 @@ const SignIn = () => {
         // 'SpaceMono-Regular': require('@/assets/fonts/SpaceMono-Regular.ttf')
     });
 
-    const { setUser, user } = useUserContext();
+    const { setUser, user, setIsAuthenticated, login } = useUserContext();
 
     const { handleSubmit, control, reset, formState: { errors, isDirty, isValid } } = useForm<SigninType>({
         defaultValues: {
@@ -36,7 +37,7 @@ const SignIn = () => {
     });
 
     const onSubmit = ((data) => {
-        axios.post(`${config.backendURL}/api/auth/login`, data)
+        api.post(`/api/auth/login`, data)
             .then(async (res: AxiosResponse) => {
                 await AsyncStorage.setItem('Authorization', res.data.token);
                 Toast.show({
@@ -45,15 +46,10 @@ const SignIn = () => {
                     text2: 'Your user has been signed in!',
                     visibilityTime: 500,
                     onHide: async () => {
-                        axios.get(`${config.backendURL}/api/auth/protected`, {
-                            headers: {
-                                Authorization: await AsyncStorage.getItem('Authorization')
-                            }
-                        })
-                            .then((res: AxiosResponse) => {
-                                setUser(res.data);
-                                router.navigate('/(tabs)/home')
-                            });
+                        api.get(`/api/auth/protected`)
+                        .then((res: AxiosResponse) => {
+                            login(res.data);
+                        });
                     }
                 });
         })

@@ -1,11 +1,28 @@
 import FontAwesome5 from '@expo/vector-icons/build/FontAwesome5';
 import Ionicons from '@expo/vector-icons/build/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
-import { Tabs } from 'expo-router';
-import React from 'react';
+import { Redirect, router, Tabs } from 'expo-router';
+import React, { useEffect } from 'react';
 import { Platform } from 'react-native';
+import { useUserContext } from '../contexts/userContext';
+import axios, { AxiosResponse } from 'axios';
+import { config } from '../api/config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LoaderScreen } from 'react-native-ui-lib';
 
 const TabsLayout = () => {
+    const { isAuthenticated, user, setUser, loading } = useUserContext();
+    
+    if (loading) {
+        return (
+            <LoaderScreen/>
+        );
+    }
+
+    if (!user) {
+        return <Redirect href={"/(auth)/sign-in"}/>
+    }
+
     return (
         <Tabs screenOptions={{
             tabBarStyle: {

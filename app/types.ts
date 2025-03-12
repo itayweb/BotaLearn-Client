@@ -73,7 +73,12 @@ export interface IUser {
 
 export type UserContextType = {
     user: IUser,
-    setUser: (user: IUser) => void
+    setUser: (user: IUser) => void,
+    isAuthenticated: boolean,
+    setIsAuthenticated: (isAuthenticated: boolean) => void,
+    login: (userData: IUser) => void,
+    logout: () => void,
+    loading: boolean
 }
 
 export type PlantType = {

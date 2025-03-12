@@ -23,6 +23,7 @@ import Toast from 'react-native-toast-message';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 import { faCircleQuestion } from '@fortawesome/free-regular-svg-icons'
+import api from '../api/api'
 
 const AddPlant = () => {
     const [fontsLoaded] = useFonts({
@@ -135,20 +136,14 @@ const AddPlant = () => {
     };
 
     useEffect(() => {
-        AsyncStorage.getItem('Authorization')
-            .then((auth) => {
-                axios.get(`${config.backendURL}/api/plants/getAvailablePlants`, {
-                    headers: {
-                        Authorization: auth
-                    },
-                    params: {
-                        username: user.username
-                    }
-                })
-                    .then((res: AxiosResponse) => {
-                        setAvailablePlants(res.data);
-                    });
-            });
+        api.get(`/api/plants/getAvailablePlants`, {
+            params: {
+                username: user.username
+            }
+        })
+        .then((res: AxiosResponse) => {
+            setAvailablePlants(res.data);
+        });
     }, []);
 
     return (
