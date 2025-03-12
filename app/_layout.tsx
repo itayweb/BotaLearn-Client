@@ -4,9 +4,11 @@ import React from "react";
 import { useColorScheme } from "react-native";
 import { StatusBar } from 'expo-status-bar';
 import { UserProvider } from "./contexts/userContext";
+import AuthHandler from "../components/AuthHandler";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
@@ -18,6 +20,7 @@ export default function RootLayout() {
           <Stack.Screen name="search/[query]" options={{ headerShown: false, gestureEnabled: false }} />
           <Stack.Screen name="(plants)" options={{ headerShown: false }} />
         </Stack>
+        {/* <AuthHandler/> */}
         <StatusBar style="auto"/>
       </UserProvider>
     </ThemeProvider>

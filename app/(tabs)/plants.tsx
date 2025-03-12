@@ -15,6 +15,7 @@ import axios, { AxiosResponse } from 'axios'
 import { config } from '../api/config'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import Toast from 'react-native-toast-message'
+import api from '../api/api'
 
 const Plants = () => {
     const [fontsLoaded] = useFonts({
@@ -29,10 +30,7 @@ const Plants = () => {
     const onRefresh = async () => {
         setRefreshing(true);
         try {
-            axios.get(`${config.backendURL}/api/plants/getUserPlants`, {
-                headers: {
-                    Authorization: await AsyncStorage.getItem('Authorization')
-                },
+            api.get(`/api/plants/getUserPlants`, {
                 params: {
                     username: user.username
                 }
@@ -59,7 +57,7 @@ const Plants = () => {
             <GestureHandlerRootView>
                 <ScrollView refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
-                } >
+                } stickyHeaderHiddenOnScroll={true}>
                     <View style={styles.gardenHeader}>
                         <Text style={styles.title}>My Garden</Text>
                         <CustomButton style={styles.addPlantButton} icon={<FontAwesomeIcon icon={faPlus}/>} onPress={() => {router.navigate('/(plants)/addplant')}}/>
