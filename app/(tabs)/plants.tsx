@@ -11,9 +11,7 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { router } from 'expo-router'
 import { GestureHandlerRootView, RefreshControl } from 'react-native-gesture-handler'
-import axios, { AxiosResponse } from 'axios'
-import { config } from '../api/config'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { AxiosResponse } from 'axios'
 import Toast from 'react-native-toast-message'
 import api from '../api/api'
 
@@ -73,7 +71,7 @@ const Plants = () => {
                                     </>
                                 ) : (
                                     user.plants.map((plant: IPlant) => {
-                                        return <Plant plant={plant} key={plant.plantid + user.username}/>
+                                        return <Plant plant={plant} key={plant.plant_id + user.username}/>
                                     })
                                 )
                             }

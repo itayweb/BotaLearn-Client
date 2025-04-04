@@ -1,7 +1,6 @@
-import { View, Text, Image, StyleSheet, ScrollView, Button } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { View, Text, Image, StyleSheet, Button } from 'react-native'
+import React, {  } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Entypo } from '@expo/vector-icons'
 import {useFonts} from 'expo-font'
 import AuthTextBox from '../../components/AuthTextBox'
 import {faEnvelope} from '@fortawesome/free-regular-svg-icons';
@@ -10,11 +9,9 @@ import CustomButton from '../../components/CustomButton'
 import { KeyboardAwareScrollView } from '@codler/react-native-keyboard-aware-scroll-view'
 import { router } from 'expo-router'
 import { Controller, useForm } from 'react-hook-form'
-import { SigninType, SignupType, IUser } from '../types'
+import { SigninType } from '../types'
 import axios, { AxiosResponse } from 'axios'
 import Toast from 'react-native-toast-message'
-import { config } from '../api/config';
-// import SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useUserContext } from '../contexts/userContext'
 import api from '../api/api'
