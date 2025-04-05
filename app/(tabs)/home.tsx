@@ -1,23 +1,27 @@
-import { View, Text, StyleSheet } from 'react-native'
+import { Text, StyleSheet } from 'react-native'
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 const Home = () => {
+
     return (
-        <SafeAreaView style={styles.title}>
-            <Text style={styles.title}>Home</Text>
+        <SafeAreaView style={styles.root}>
+            <Text style={{
+                color: 'white'
+            }}>Home</Text>
         </SafeAreaView>
     )
 }
 
 const styles = StyleSheet.create({
-    title: {
+    root: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        color: 'white',
-        margin: 'auto'
-    }
+        margin: 20
+    },
+    container: { flex: 1 },
+    map: { flex: 1, width: 400, height: 400 },
 })
 
 export default Home

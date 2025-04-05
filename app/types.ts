@@ -40,26 +40,25 @@ export type SigninType = {
 
 export interface IPlantReminder {
     id: string,
-    date: Date,
-    isFinished: boolean,
+    ts: EpochTimeStamp,
+    is_finished: boolean,
 }
 
 export interface IPlantAction {
     id: string,
     stage: string,
-    isFinished: boolean,
-    startTS: Date,
-    endTS: Date,
+    is_finished: boolean,
+    start_ts: EpochTimeStamp,
+    end_ts: EpochTimeStamp,
 }
 
 export interface IPlant {
-    plantid: string,
+    plant_id: string,
     name: string,
-    type: string,
-    humidity: number,
-    season: string,
-    lightExposure: number,
-    placement: string,
+    min_humidity: number,
+    max_humidity: number,
+    min_light_exposure: number,
+    max_light_exposure: number,
     reminders: IPlantReminder[],
     actions: IPlantAction[]
 }
@@ -86,18 +85,21 @@ export type PlantType = {
 }
 
 export interface IAvailablePlant {
-    id: string,
-    default_humidity: number,
-    default_light_exposure: number,
+    pid: string,
     name: string,
-    type: string,
-    default_season: string,
-    default_placement: string
+    min_humidity: number,
+    max_humidity: number,
+    min_light_exposure: number,
+    max_light_exposure: number,
+    min_temp: number,
+    max_temp: number,
+    image: string
 }
 
 export type AvailablePlantType = {
     plant: IAvailablePlant,
     onPress: (event:React.BaseSyntheticEvent) => void,
+    displayMode: 'list' | 'grid'
 }
 
 export type BottomSheetType = {
@@ -110,10 +112,9 @@ export type BottomSheetType = {
 }
 
 export type UserPlantType = {
-    plantid: string,
-    humidity: number,
-    light_exposure: number,
-    season: string,
-    placement: string,
-    username: string
+    plant_id: string,
+    planting_position: {
+        lat: number,
+        lng: number
+    }
 }

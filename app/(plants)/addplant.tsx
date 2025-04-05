@@ -1,36 +1,37 @@
-import { View, Text, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Platform, StatusBar } from 'react-native'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import CustomBackButton from '../../components/CustomBackButton'
 import { router } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { KeyboardAwareScrollView } from '@codler/react-native-keyboard-aware-scroll-view'
 import { useFonts } from 'expo-font'
-import axios, { AxiosResponse } from 'axios'
+import  { AxiosResponse } from 'axios'
 import { config } from '../api/config'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useUserContext } from '../contexts/userContext'
-import { IAvailablePlant, SigninType, UserPlantType } from '../types'
+import { IAvailablePlant, UserPlantType } from '../types'
 import AvailablePlant from '../../components/AvailablePlant'
-import { GestureHandlerRootView, RefreshControl, ScrollView } from 'react-native-gesture-handler'
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetModalProvider, BottomSheetScrollView, BottomSheetTextInput, BottomSheetView, useBottomSheetInternal } from '@gorhom/bottom-sheet'
-import AuthTextBox from '../../components/AuthTextBox'
+import { GestureHandlerRootView, NativeViewGestureHandler, RefreshControl, ScrollView } from 'react-native-gesture-handler'
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetModalProvider, BottomSheetScrollView, BottomSheetView, TouchableWithoutFeedback } from '@gorhom/bottom-sheet'
 import CustomButton from '../../components/CustomButton'
-import { TextField } from 'react-native-ui-lib';
-import { runOnUI } from 'react-native-reanimated';
-import BottomSheetInput from '../../components/BottomSheetInput';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import Toast from 'react-native-toast-message';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import { faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 import { faCircleQuestion } from '@fortawesome/free-regular-svg-icons'
 import api from '../api/api'
+import { faBookOpen, faGripVertical, faList } from '@fortawesome/free-solid-svg-icons'
+import { LatLng, LeafletView, MapMarker } from 'react-native-leaflet-view'
+import { Callout, Camera, MapView, PointAnnotation } from '@maplibre/maplibre-react-native'
+import Tooltip from 'react-native-walkthrough-tooltip';
 
 const AddPlant = () => {
     const [fontsLoaded] = useFonts({
         'Nunito-VariableFont_wght': require('../../assets/fonts/Nunito-VariableFont_wght.ttf')
         // 'SpaceMono-Regular': require('@/assets/fonts/SpaceMono-Regular.ttf')
     });
-    
+
+    const [isListMode, setIsListMode] = useState(false);
+    const [isGridMode, setIsGridMode] = useState(true);
+
     const [availablePlants, setAvailablePlants] = useState<IAvailablePlant[]>([]);
 
     const { user } = useUserContext();
@@ -40,25 +41,21 @@ const AddPlant = () => {
     const snapPoints = useMemo(() => ["60%"], []);
 
     const renderBackdrop = useCallback(
-    (props) => (
-        <BottomSheetBackdrop
-            {...props}
-            disappearsOnIndex={-1} // Hides when sheet is closed
-            appearsOnIndex={0} // Shows when sheet is opened
-            opacity={0.7} // Adjust dim effect
-        />
+        (props) => (
+            <BottomSheetBackdrop
+                {...props}
+                disappearsOnIndex={-1} // Hides when sheet is closed
+                appearsOnIndex={0} // Shows when sheet is opened
+                opacity={0.7} // Adjust dim effect
+            />
         ), []);
-    
+
     const [selectedPlant, setSelectedPlant] = useState<IAvailablePlant>(null);
 
-    const { handleSubmit, control, reset, formState: { errors, isDirty, isValid } } = useForm<UserPlantType>({
+    const { handleSubmit, reset, setValue } = useForm<UserPlantType>({
         defaultValues: {
-            plantid: '',
-            humidity: Number(''),
-            light_exposure: Number(''),
-            season: '',
-            placement: '',
-            username: ''
+            plant_id: '',
+            planting_position: {}
         },
         mode: "onChange"
     });
@@ -66,7 +63,7 @@ const AddPlant = () => {
     const onSubmit = (async (data: UserPlantType) => {
         AsyncStorage.getItem('Authorization')
             .then((auth) => {
-                axios.post(`${config.backendURL}/api/plants/addPlant`, data, {
+                api.post('/api/plants/addPlant', data, {
                     headers: {
                         Authorization: auth
                     }
@@ -77,7 +74,7 @@ const AddPlant = () => {
                             text1: `Added ${selectedPlant.name} to your garden successfully!`,
                             visibilityTime: 1000,
                             onHide: async () => {
-                                axios.get(`${config.backendURL}/api/plants/getUserPlants`, {
+                                api.get(`${config.backendURL}/api/plants/getUserPlants`, {
                                     headers: {
                                         Authorization: await AsyncStorage.getItem('Authorization')
                                     },
@@ -100,18 +97,12 @@ const AddPlant = () => {
             });
     });
 
-    const onChange = ((arg) => {
-        return {
-            value: arg.nativeEvent.text,
-        }
-    });
-
     const [refreshing, setRefreshing] = useState(false);
 
     const onRefresh = async () => {
         setRefreshing(true);
         try {
-            axios.get(`${config.backendURL}/api/plants/getAvailablePlants`, {
+            api.get(`${config.backendURL}/api/plants/getAvailablePlants`, {
                 headers: {
                     Authorization: await AsyncStorage.getItem('Authorization')
                 },
@@ -135,15 +126,50 @@ const AddPlant = () => {
         }
     };
 
+    const DEFAULT_COORDINATE: LatLng = {
+        lat: 32.109333,
+        lng: 34.855499,
+    };
+
+    const [markers, setMarkers] = useState<MapMarker[]>([]);
+    
+    const handleMapClick = (event: any) => {
+        if (event.event === "onMapClicked") {
+            const { lat, lng } = event.payload.touchLatLng;
+
+            // Create a new marker at the clicked location
+            const newMarker: MapMarker = {
+                id: `marker-${lat}-${lng}`,
+                position: { lat, lng },
+                icon: "📍", // You can use an image URL instead
+                iconAnchor: [5,20]
+            };
+
+            setMarkers([newMarker]); // Replace existing markers or use [...markers, newMarker] to keep previous ones
+            setValue("planting_position", newMarker.position);
+        }
+    };
+
+    const [marker, setMarker] = useState<{lat: number; lng: number} | null>({lat: 32.109333, lng: 34.855499});
+    
+    const onMapPress = (event: any) => {
+        console.log(event);
+        const {geometry} = event;
+        setMarker({lat: geometry.coordinates[1], lng: geometry.coordinates[0]});
+        setValue("planting_position", {lat: geometry.coordinates[0], lng: geometry.coordinates[1]});
+    }
+
+    const [toolTipVisible, setToolTipVisible] = useState(false);
+
     useEffect(() => {
         api.get(`/api/plants/getAvailablePlants`, {
             params: {
                 username: user.username
             }
         })
-        .then((res: AxiosResponse) => {
-            setAvailablePlants(res.data);
-        });
+            .then((res: AxiosResponse) => {
+                setAvailablePlants(res.data);
+            });
     }, []);
 
     return (
@@ -151,58 +177,131 @@ const AddPlant = () => {
             <GestureHandlerRootView>
                 <BottomSheetModalProvider>
                     <ScrollView refreshControl={
-                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                     }>
                         <View style={styles.addHeader}>
                             <CustomBackButton onPress={() => router.back()} />
                             <Text style={styles.addHeaderText}>Add Plant</Text>
+                            <View style={styles.plantsViewDisplayModes}>
+                                <TouchableOpacity onPress={() => {
+                                    setIsGridMode(true);
+                                    setIsListMode(false);
+                                }}>
+                                    <FontAwesomeIcon icon={faGripVertical} color={isGridMode ? '#96d36f' : 'white'} size={24} />
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => {
+                                    setIsGridMode(false);
+                                    setIsListMode(true);
+                                }}>
+                                    <FontAwesomeIcon icon={faList} color={isListMode ? '#96d36f' : 'white'} size={24} />
+                                </TouchableOpacity>
+                            </View>
                         </View>
-                        <View style={styles.addPlantView}>
+                        <View style={[styles.addPlantView, isGridMode ? {
+                            flexDirection: 'row',
+                            flexWrap: 'wrap',
+                            padding: 10,
+                            gap: 5
+                        } : {}]}>
                             {
                                 availablePlants.length === 0 ? (
-                                    <Text style={{color: 'white'}}>You've added all the available plants 😊</Text>
+                                    <Text style={{ color: 'white' }}>You've added all the available plants 😊</Text>
                                 ) : (
                                     availablePlants.map((avPlant) => {
                                         return (
-                                            <AvailablePlant plant={avPlant} key={avPlant.id} onPress={() => {
+                                            <AvailablePlant plant={avPlant} key={avPlant.pid} onPress={() => {
                                                 bottomSheetModalRef.current?.present();
                                                 setSelectedPlant(avPlant);
-                                                reset({ plantid: avPlant.id, humidity: avPlant.default_humidity, light_exposure: avPlant.default_light_exposure, season: avPlant.default_season, placement: avPlant.default_placement, username: user.username });
-                                            }}/>
+                                                reset({ plant_id: avPlant.pid, planting_position: markers.length ? markers[0].position : {}});
+                                            }} displayMode={isListMode ? 'list' : 'grid'} />
                                         )
-                                    })  
+                                    })
                                 )
                             }
                         </View>
-                        <BottomSheetModal ref={bottomSheetModalRef} index={1} backgroundStyle={styles.detailsView} backdropComponent={renderBackdrop}  handleIndicatorStyle={styles.detailsHandle} snapPoints={snapPoints}>
+                        <BottomSheetModal ref={bottomSheetModalRef} index={1} backgroundStyle={styles.detailsView} backdropComponent={renderBackdrop} handleIndicatorStyle={styles.detailsHandle} snapPoints={snapPoints}>
                             <BottomSheetView>
-                                <BottomSheetScrollView>
+                                <BottomSheetScrollView style={{
+                                    height: '100%'
+                                }}>
                                     <View style={styles.detailsHeader}>
                                         <Text style={styles.detailsHeaderText}>Add {selectedPlant?.name}</Text>
-                                        <TouchableOpacity>
-                                            <FontAwesomeIcon icon={faCircleQuestion} color='white' size={24} style={styles.detailsHeaderInfo}/>
+                                        <TouchableOpacity style={{
+                                            borderStyle: 'solid',
+                                            borderWidth: 3,
+                                            borderColor: 'white',
+                                            borderRadius: '50%',
+                                            // alignSelf: 'baseline'
+                                            // alignSelf: 'center'
+                                            padding: 7
+                                        }}>
+                                            <FontAwesomeIcon icon={faBookOpen} color='white' size={24} />
                                         </TouchableOpacity>
                                     </View>
-                                    <Controller rules={{ required: true }} control={control} render={({ field: { onChange, value } }) => {
-                                        return <BottomSheetInput bottomSheetRef={bottomSheetModalRef} placeholder='Humidity' defaultValue={String(selectedPlant?.default_humidity)} onChangeData={(value) => onChange(value)} value={String(value)}/>
-                                    }} name='humidity' />
-                                    <Controller rules={{ required: true }} control={control} render={({ field: { onChange, value } }) => {
-                                        return <BottomSheetInput bottomSheetRef={bottomSheetModalRef} placeholder='Light Exposure' defaultValue={String(selectedPlant?.default_light_exposure)} onChangeData={(value) => onChange(value)} value={String(value)}/>
-                                    }} name='light_exposure' />
-                                    <Controller rules={{ required: true }} control={control} render={({ field: { onChange, value } }) => {
-                                        return <BottomSheetInput bottomSheetRef={bottomSheetModalRef} placeholder='Season' defaultValue={String(selectedPlant?.default_season)} onChangeData={(value) => onChange(value)} value={String(value)}/>
-                                    }} name='season' />
-                                    <Controller rules={{ required: true }} control={control} render={({ field: { onChange, value } }) => {
-                                        return <BottomSheetInput bottomSheetRef={bottomSheetModalRef} placeholder='Placement' defaultValue={String(selectedPlant?.default_placement)} onChangeData={(value) => onChange(value)} value={String(value)}/>
-                                    }} name='placement' />
-                                    <CustomButton text='Add Plant To Garden' style={styles.addPlantButton} onPress={handleSubmit(onSubmit)}/>
+                                    <View style={styles.detailsDescriptionContainer}>
+                                        <Text style={{
+                                            color: 'white',
+                                            fontFamily: 'Nunito',
+                                            fontWeight: '500',
+                                            fontSize: 15,
+                                            marginVertical: 7
+                                        }}>Choose planting location</Text>
+                                        <Tooltip
+                                            isVisible={toolTipVisible}
+                                            content={<Text>For better plant tracking select where do you going to plant this {selectedPlant?.name}</Text>}
+                                            placement="top"
+                                            onClose={() => setToolTipVisible(false)}
+                                        >
+                                            <TouchableOpacity onPress={() => setToolTipVisible(true)}>
+                                                <FontAwesomeIcon icon={faCircleQuestion} color='white' size={24} />
+                                            </TouchableOpacity>
+                                        </Tooltip>
+                                    </View>
+                                    {/* <TouchableWithoutFeedback onPress={() => {}}> */}
+                                    {/* <NativeViewGestureHandler disallowInterruption={true}> */}
+                                        {/* <View style={{
+                                            // height: 'auto'
+                                            height: 300
+                                        }}> */}
+                                            {/* <Controller name='planting_position' rules={{required: true}} control={control} render={({field: {onChange, value}}) => {
+                                                return <LeafletView
+                                                    zoom={15}
+                                                    onMessageReceived={handleMapClick}
+                                                    mapMarkers={markers}
+                                                    mapCenterPosition={markers.length ? markers[0].position : DEFAULT_COORDINATE}
+                                                />
+                                            }}/> */}
+                                            <MapView
+                                                onPress={onMapPress}
+                                                style={styles.map}
+                                                // mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json" // OpenStreetMap-based tiles
+                                                mapStyle="https://tiles.openfreemap.org/styles/liberty" // OpenStreetMap-based tiles
+                                            >
+                                                <Camera zoomLevel={12} centerCoordinate={[marker.lng, marker.lat]}/>
+                                                <PointAnnotation id='m1' coordinate={[marker.lng, marker.lat]}>
+                                                    <Callout>
+                                                        <Text>test</Text>
+                                                    </Callout>
+                                                    <View style={{
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        position: 'absolute',
+                                                    }}>
+                                                        <Text style={{fontSize: 24}}>📍</Text>
+                                                    </View>
+                                                </PointAnnotation>
+                                            </MapView>
+                                        {/* </View> */}
+                                    {/* </NativeViewGestureHandler> */}
+                                    {/* </TouchableWithoutFeedback> */}
+                                    <CustomButton text='Add Plant To Garden' style={styles.addPlantButton} onPress={handleSubmit(onSubmit)} />
                                 </BottomSheetScrollView>
                             </BottomSheetView>
                         </BottomSheetModal>
                     </ScrollView>
                 </BottomSheetModalProvider>
             </GestureHandlerRootView>
-            <Toast/>
+            <Toast />
         </SafeAreaView>
     )
 }
@@ -226,13 +325,12 @@ const styles = StyleSheet.create({
     },
     addPlantView: {
         flex: 1,
-        justifyContent: 'flex-start',
+        justifyContent: 'space-between',
         alignItems: 'center',
+
     },
     detailsView: {
         backgroundColor: '#121212',
-        // color: 'white'
-        // backgroundColor: '#4e4e4ece3'
     },
     detailsHeader: {
         marginLeft: 15,
@@ -247,12 +345,15 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         fontSize: 30,
     },
-    detailsHeaderInfo: {
-        marginRight: 20,
+    detailsDescriptionContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginHorizontal: 15
     },
     detailsHandle: {
         backgroundColor: '#918f8f',
-        // width: '50%'
     },
     addPlantButton: {
         backgroundColor: '#96d36f',
@@ -262,12 +363,17 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         width: '50%',
         margin: 'auto',
-        fontSize: 10
-        // textAlign: 'center'
-        // height: '50%'
+        fontSize: 10,
+        marginTop: 10
     },
-    plantSpecTextField: {
-
+    plantsViewDisplayModes: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        gap: 10
+    },
+    map: {
+        height: 300
     }
 })
 
