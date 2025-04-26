@@ -4,12 +4,10 @@ import { CustomButtonType } from '../app/types'
 
 const CustomButton: React.FC<CustomButtonType> = ({style, text, isDisable, onPress, icon}) => {
     return (
-        <View>
-            <TouchableOpacity style={[style, isDisable && styles.disabledButton]} disabled={isDisable} onPress={onPress}>
-                {icon}
-                <Text style={styles.buttonText}>{text}</Text>
-            </TouchableOpacity>
-        </View>
+        <TouchableOpacity style={[style, isDisable && styles.disabledButton]} disabled={isDisable} onPress={onPress}>
+            {icon}
+            <Text style={styles.buttonText}>{text}</Text>
+        </TouchableOpacity>
     )
 }
 

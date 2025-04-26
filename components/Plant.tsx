@@ -5,6 +5,7 @@ import { faClock } from '@fortawesome/free-regular-svg-icons'
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons'
 import { BlurView } from 'expo-blur';
 import { PlantType } from '../app/types'
+import { router } from 'expo-router'
 
 const Plant:React.FC<PlantType> = ({
     plant
@@ -26,7 +27,13 @@ const Plant:React.FC<PlantType> = ({
                 </View>
                 {/* <View style={styles.plantManage}> */}
                 <TouchableOpacity style={styles.plantManage} activeOpacity={0.7} onPress={() => {
-                    }}>
+                    router.navigate({
+                        pathname: '/(plants)/manage',
+                        params: {
+                          plant: JSON.stringify(plant),
+                        },
+                      })
+                }}>
                         <Text style={styles.plantManageTitle}>Manage</Text>
                         <FontAwesomeIcon icon={faAngleRight} color='white' style={styles.plantManageIcon} size={18}/>
                     </TouchableOpacity>

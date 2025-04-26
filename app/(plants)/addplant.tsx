@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
     addHeaderText: {
         color: 'white',
         fontFamily: 'Nunito',
-        fontWeight: '700',
+        fontWeight: '800',
         fontSize: 30,
         marginLeft: 15,
     },
