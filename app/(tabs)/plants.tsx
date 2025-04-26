@@ -91,7 +91,8 @@ const styles = StyleSheet.create({
         fontSize: 36,
         color: 'white',
         fontFamily: 'Nunito',
-        margin: 10
+        margin: 10,
+        fontWeight: '800'
     },
     plantsViewContainer: {
         margin: 10

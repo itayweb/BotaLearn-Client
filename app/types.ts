@@ -57,8 +57,18 @@ export interface IPlant {
     name: string,
     min_humidity: number,
     max_humidity: number,
+    avg_humidity: number,
     min_light_exposure: number,
     max_light_exposure: number,
+    avg_light_exposure: number,
+    min_temp: number,
+    max_temp: number,
+    avg_temp: number,
+    planting_position: {
+        coordinates: [number, number],
+        type: string
+    },
+    base_image: string,
     reminders: IPlantReminder[],
     actions: IPlantAction[]
 }
@@ -117,4 +127,8 @@ export type UserPlantType = {
         lat: number,
         lng: number
     }
+}
+
+export type PlantManageType = {
+    plant: IPlant,
 }
